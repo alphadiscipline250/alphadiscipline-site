@@ -18,6 +18,23 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+  // Détection prix/zone — définie tôt pour être appliquée dès que chaque bloc prix apparaît dans le DOM,
+  // au lieu d'attendre la fin de la page (évite le flash "2000 FCFA" pour les visiteurs hors Afrique).
+  function adGetPricing(){
+    var isAfrica = true;
+    try{
+      var tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+      isAfrica = tz.startsWith('Africa/');
+    }catch(e){ isAfrica = true; }
+    return {
+      priceText: isAfrica ? '2000 FCFA' : '9€',
+      checkoutLink: isAfrica
+        ? 'https://akijntkn.mychariow.shop/prd_122br414/checkout'
+        : 'https://akijntkn.mychariow.shop/prd_fg0vismk/checkout'
+    };
+  }
+</script>
 <style>
   :root{
     --r:#E30613; --o:#C9A84C; --bg:#080808; --card:#111111;
@@ -183,12 +200,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p class="hero-sub">Une leçon, un défi concret et une citation par jour, pendant 30 jours — jusqu'à ce que la discipline ne soit plus un effort, mais un réflexe.</p>
 
       <div class="price-block">
-        <span class="amount cat-price" id="priceAmount">2000 FCFA</span>
+        <span class="amount" id="priceAmount">2000 FCFA</span>
       </div>
       <p class="price-note">Prix ajusté selon ta zone · confirmé sur la page de paiement</p>
 
       <a class="cta" id="ctaBtn" href="#LIEN-CHARIOW-A-REMPLACER">Obtenir le défi <span>→</span></a>
       <p class="trust-line">🔒 Paiement sécurisé · ⚡ Livraison immédiate · 🔁 Garanti 7 jours</p>
+      <script>
+        (function(){
+          var p = adGetPricing();
+          document.getElementById('priceAmount').textContent = p.priceText;
+          document.getElementById('ctaBtn').href = p.checkoutLink;
+        })();
+      </script>
     </section>
 
     <!-- STATS -->
@@ -303,9 +327,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section class="final-cta">
       <h2>Prêt à transformer 30 jours en mode de vie ?</h2>
       <div class="price-block" style="margin-top:20px;">
-        <span class="amount cat-price" id="priceAmount2">2000 FCFA</span>
+        <span class="amount" id="priceAmount2">2000 FCFA</span>
       </div>
       <a class="cta" id="ctaBtn2" href="#LIEN-CHARIOW-A-REMPLACER">Obtenir le défi <span>→</span></a>
+      <script>
+        (function(){
+          var p = adGetPricing();
+          document.getElementById('priceAmount2').textContent = p.priceText;
+          document.getElementById('ctaBtn2').href = p.checkoutLink;
+        })();
+      </script>
     </section>
   </main>
 
@@ -325,24 +356,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     burgerBtn.addEventListener('click', () => { drawer.classList.contains('open') ? closeDrawer() : openDrawer(); });
     drawerOverlay.addEventListener('click', closeDrawer);
     document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeDrawer(); });
-
-    // Prix géolocalisé (heuristique fuseau horaire — gratuit, sans API)
-    function detectIsAfrica(){
-      try{
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        return tz.startsWith('Africa/');
-      }catch(e){ return true; } // fallback : public principal = Afrique
-    }
-    const isAfrica = detectIsAfrica();
-    const priceText = isAfrica ? '2000 FCFA' : '9€';
-
-    const checkoutLink = isAfrica
-      ? 'https://akijntkn.mychariow.shop/prd_122br414/checkout'
-      : 'https://akijntkn.mychariow.shop/prd_fg0vismk/checkout';
-
-    document.querySelectorAll('.cat-price').forEach(el => el.textContent = priceText);
-    document.getElementById('ctaBtn').href = checkoutLink;
-    document.getElementById('ctaBtn2').href = checkoutLink;
 
     // FAQ accordéon
     document.querySelectorAll('.faq-item').forEach(item => {
